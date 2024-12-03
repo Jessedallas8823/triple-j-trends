@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) {
         MarketData marketData = new MarketData();
 
-        String ticker = "DNA"; // Example stock ticker
+        String ticker = "POET" ; // Example stock ticker
         LocalDate startDate = LocalDate.now().minusWeeks(2);
         LocalDate endDate = LocalDate.now();
 
