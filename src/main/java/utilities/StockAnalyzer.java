@@ -3,39 +3,46 @@ package utilities;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 public class StockAnalyzer {
     private final String tickerSymbol;
     private final Map<LocalDate, BigDecimal> dailyOpeningPrices;
     private final Map<LocalDate, BigDecimal> dailyClosingPrices;
+    private final List<String> stockNews; // List to store stock news articles
 
     // Constructor
-    public StockAnalyzer(String tickerSymbol, Map<LocalDate, BigDecimal> dailyOpeningPrices, Map<LocalDate, BigDecimal> dailyClosingPrices) {
+    public StockAnalyzer(String tickerSymbol, Map<LocalDate, BigDecimal> dailyOpeningPrices,
+                         Map<LocalDate, BigDecimal> dailyClosingPrices, List<String> stockNews) {
         this.tickerSymbol = tickerSymbol;
         this.dailyOpeningPrices = dailyOpeningPrices;
         this.dailyClosingPrices = dailyClosingPrices;
+        this.stockNews = stockNews; // Store stock news
     }
 
-    // Print the full analysis summary
-    public void printAnalysisSummary(LocalDate startDate, LocalDate endDate) {
-        System.out.println("Stock Analysis Summary:");
-        System.out.println("Stock Symbol: " + tickerSymbol);
-        System.out.println("Start Date: " + startDate);
-        System.out.println("End Date: " + endDate);
-        System.out.println("Daily Opening and Closing Prices in the Last Two Weeks:");
+    // Updated method to return analysis summary as a String
+    public String printAnalysisSummary(LocalDate startDate, LocalDate endDate) {
+        StringBuilder summary = new StringBuilder();
+        summary.append("Stock Analysis Summary:\n");
+        summary.append("Stock Symbol: ").append(tickerSymbol).append("\n");
+        summary.append("Start Date: ").append(startDate).append("\n");
+        summary.append("End Date: ").append(endDate).append("\n");
+        summary.append("Daily Opening and Closing Prices:\n");
 
         dailyClosingPrices.forEach((date, closingPrice) -> {
             BigDecimal openingPrice = dailyOpeningPrices.getOrDefault(date, BigDecimal.ZERO);
-            System.out.println("Date: " + date + " | Opening Price: " + openingPrice + " | Closing Price: " + closingPrice);
+            summary.append("Date: ").append(date)
+                    .append(" | Opening Price: ").append(openingPrice)
+                    .append(" | Closing Price: ").append(closingPrice).append("\n");
         });
 
-        // Percentage change and recommendations
+        // Percentage change and recommendation
         BigDecimal percentageChange = calculatePercentageChange();
-        System.out.println("Percentage Change Over Period: " + percentageChange.setScale(2, RoundingMode.HALF_UP) + "%");
-        System.out.println("Recommendation: " + generateRecommendation());
+        summary.append("Percentage Change Over Period: ").append(percentageChange.setScale(2, RoundingMode.HALF_UP)).append("%\n");
+        summary.append("Recommendation: ").append(generateRecommendation()).append("\n");
 
-        // Highs and Lows
+        // Highs and lows
         LocalDate highestDate = dailyClosingPrices.entrySet().stream()
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
@@ -46,10 +53,23 @@ public class StockAnalyzer {
                 .map(Map.Entry::getKey)
                 .orElse(null);
 
-        System.out.println("Highest Closing Price: " + dailyClosingPrices.getOrDefault(highestDate, BigDecimal.ZERO)
-                + " on " + highestDate);
-        System.out.println("Lowest Closing Price: " + dailyClosingPrices.getOrDefault(lowestDate, BigDecimal.ZERO)
-                + " on " + lowestDate);
+        summary.append("Highest Closing Price: ")
+                .append(dailyClosingPrices.getOrDefault(highestDate, BigDecimal.ZERO))
+                .append(" on ").append(highestDate).append("\n");
+
+        summary.append("Lowest Closing Price: ")
+                .append(dailyClosingPrices.getOrDefault(lowestDate, BigDecimal.ZERO))
+                .append(" on ").append(lowestDate).append("\n");
+
+        // Add stock news to the summary
+        summary.append("\nLatest News Articles:\n");
+        if (stockNews != null && !stockNews.isEmpty()) {
+            stockNews.forEach(news -> summary.append("- ").append(news).append("\n"));
+        } else {
+            summary.append("No news available for this stock.\n");
+        }
+
+        return summary.toString(); // Return the summary as a String
     }
 
     // Helper to calculate percentage change

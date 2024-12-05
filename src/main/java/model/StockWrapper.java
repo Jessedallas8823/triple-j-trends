@@ -13,4 +13,6 @@ public class StockWrapper {
     private String startDate;     // Analysis start date as a string
     private String endDate;       // Analysis end date as a string
     private LocalDateTime lastAccessed; // Timestamp of the last access
+    private String provider;      // Market data provider
+    private String interval;      // Data interval (e.g., Monthly, Quarterly)
 }

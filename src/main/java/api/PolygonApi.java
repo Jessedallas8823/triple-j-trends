@@ -79,6 +79,7 @@ public class PolygonApi implements StockApi {
                 symbols.add(symbol);
             }
         } catch (Exception e) {
+            System.err.println("Error fetching stock symbols: " + e.getMessage());
             e.printStackTrace();
         }
         return symbols;
